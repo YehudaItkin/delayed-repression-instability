@@ -7,8 +7,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 ROOT = Path(__file__).resolve().parents[1]
-RESULTS = ROOT / 'results' / 'paper1_v2'
-FIGDIR = ROOT.parent / 'paper1' / 'latex' / 'figures'
+REPO_ROOT = ROOT.parent
+RESULTS = REPO_ROOT / 'results'
+FIGDIR = REPO_ROOT / 'figures'
 FIGDIR.mkdir(parents=True, exist_ok=True)
 
 
