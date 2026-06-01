@@ -1,0 +1,171 @@
+\section{Theory: Delayed Repression Dynamics}
+
+\subsection{Problem formulation}
+
+We consider a population of $N$ agents that choose between conformist and autonomous (radical) behavior over discrete time steps. An institution observes the population state, but with a processing delay of $\Delta$ steps. Based on the delayed observation, the institution sets a repression probability that imposes costs on radical agents. Formally:
+\begin{itemize}
+\item \textbf{Input:} system parameters $(N, \Delta, k, \text{agent architecture})$, where $k$ is the institutional response sharpness.
+\item \textbf{State:} the radical fraction $x(t) \in [0,1]$ at each time step $t$.
+\item \textbf{Dynamics:} the delayed replicator equation $\dot{x}(t) = x(t)(1{-}x(t))[a - C\,p(x(t{-}\Delta))]$, where $p(\cdot)$ is the institutional response function and $a = B - S$ is the net autonomy advantage.
+\item \textbf{Question:} for what values of $\Delta$ does the unique interior equilibrium $x^*$ lose stability?
+\end{itemize}
+We formalize this question in a reduced mean-field model (this section), derive the stability boundary $\Delta_c$ in closed form, and then test whether the mechanism survives in a full agent-based simulation where agents maximize cumulative discounted reward $\sum_{t} \gamma^t r_i(t)$ via Q-learning (Section~3).
+
+\subsection{Reduced mean-field model}
+
+The analytical model builds on the replicator equation framework introduced by \citet{taylor1978evolutionary} and developed extensively in \citet{hofbauer1998evolutionary}, incorporating the delay mechanisms analyzed in the general setting by \citet{kuang1993delay} and in evolutionary games specifically by \citet{wesson2016hopf}.
+
+Let $x(t)\in[0,1]$ denote the fraction of agents adopting an autonomous (radical) strategy at time $t$. Non-autonomous agents receive a baseline payoff $S$. Autonomous agents receive benefit $B$, but incur punishment cost $C>0$ with probability determined by a delayed aggregate signal. Define the net autonomy advantage as
+\[
+    a := B-S.
+\]
+We study the delayed replicator equation
+\begin{equation}
+\dot{x}(t)=x(t)(1-x(t))\left[a-Cp(x(t-\Delta))\right],
+\label{eq:delayed_rep}
+\end{equation}
+where $\Delta\ge 0$ is the repression delay and $p\colon[0,1]\to[0,1]$ is a smooth increasing response function representing the probability that the institution activates repression given the observed population state. The logistic growth factor $x(1-x)$ ensures that the dynamics vanish at the population boundaries, as is standard in replicator equations. The key modeling assumption is that the institution observes and responds to the population state at time $t-\Delta$ rather than time $t$, reflecting bureaucratic processing time, information aggregation delays, or deliberation periods.
+
+We model the response function as a sigmoid (logistic function):
+\begin{equation}
+    p(x)=\sigma(k(x-x_c))=\frac{1}{1+e^{-k(x-x_c)}},
+\end{equation}
+where $k>0$ controls the sharpness of the institutional response and $x_c\in(0,1)$ is the threshold at which the institution transitions from low to high repression probability. This choice is motivated on three grounds. First, the sigmoid is the standard Fermi update function in stochastic evolutionary game theory \citep{traulsen2006stochastic}, where it parameterizes the sensitivity of strategy revision to payoff differences; here it plays an analogous role for institutional sensitivity to the observed radical fraction. Second, threshold-based responses are empirically characteristic of institutions that tolerate low-level deviation but activate enforcement above a critical level, a pattern common to regulatory agencies, content moderation systems, and immune responses \citep{scheffer2009critical}. Third, given an inflection point $x_c$, the sigmoid is the unique smooth monotone solution of $p'(x)=kp(x)(1-p(x))$ with $p(x_c)=1/2$, making it the natural one-parameter family indexed by sharpness $k$ for any system with logistic-type threshold activation. Larger $k$ corresponds to a more decisive institution that switches abruptly between tolerance and punishment, while smaller $k$ represents a gradual, proportional response.
+
+\subsection{Stationary points}
+
+\begin{proposition}[Interior equilibrium]
+The boundary points $x=0$ and $x=1$ are stationary. An interior stationary point $x^*\in(0,1)$ satisfies
+\begin{equation}
+    p(x^*)=\frac{a}{C}.
+\end{equation}
+If $p$ is strictly increasing on $[0,1]$, such a point exists and is unique if and only if
+\begin{equation}
+    p(0)<\frac{a}{C}<p(1).
+\end{equation}
+For a steep sigmoid with $p(0)\approx0$ and $p(1)\approx1$, this reduces approximately to $0<a<C$.
+\end{proposition}
+
+\begin{proof}
+At a stationary point of \eqref{eq:delayed_rep}, either $x=0$, $x=1$, or $a-Cp(x^*)=0$. The latter condition is equivalent to $p(x^*)=a/C$. Strict monotonicity of $p$ gives existence and uniqueness precisely when $a/C$ lies in the image of $p$ restricted to the open interval $(0,1)$.
+\end{proof}
+
+At the interior equilibrium, institutional punishment exactly offsets the net benefit of autonomy. For the sigmoid response function, the equilibrium is given explicitly by
+\begin{equation}
+    x^*=x_c+\frac{1}{k}\log\left(\frac{a}{C-a}\right),
+\label{eq:xstar}
+\end{equation}
+provided this value lies in $(0,1)$.
+
+\subsection{Stability without delay}
+
+The following theorem establishes that the interior equilibrium is locally asymptotically stable whenever repression is instantaneous. Delay is therefore necessary for the instabilities studied in subsequent sections.
+
+\begin{theorem}[Local stability without delay]
+\label{thm:nodelay}
+Assume an interior equilibrium $x^*\in(0,1)$ exists and $p'(x^*)>0$. For $\Delta=0$, $x^*$ is locally asymptotically stable.
+\end{theorem}
+
+\begin{proof}
+Let
+\[
+F(x,y)=x(1-x)[a-Cp(y)].
+\]
+With no delay, the system is $\dot{x}=F(x,x)$. Linearize around $x^*$ by writing $x(t)=x^*+u(t)$. The linear coefficient is
+\[
+A=\partial_xF(x^*,x^*)+\partial_yF(x^*,x^*).
+\]
+At the interior equilibrium, $a-Cp(x^*)=0$, so $\partial_xF(x^*,x^*)=(1-2x^*)[a-Cp(x^*)]=0$. Hence
+\[
+A=-Cx^*(1-x^*)p'(x^*)<0,
+\]
+which implies local asymptotic stability since the linearized equation $\dot{u}=Au$ decays exponentially.
+\end{proof}
+
+\subsection{Delay-induced instability}
+
+When $\Delta>0$, the linearization around $x^*$ takes the form of a scalar delay differential equation. Since $\partial_xF(x^*,x^*)=0$ as shown above, the linearized dynamics involve only the delayed term.
+
+\begin{equation}
+    \dot{u}(t)=\beta\, u(t-\Delta),
+\label{eq:linear_delay}
+\end{equation}
+where
+\begin{equation}
+    \beta=-Cx^*(1-x^*)p'(x^*)<0.
+\end{equation}
+This is a standard scalar delay equation of the form studied in \citet{kuang1993delay}. Let $b=-\beta>0$. Then \eqref{eq:linear_delay} becomes $\dot{u}(t)=-b\,u(t-\Delta)$, which is the Hayes equation whose stability boundary is classically known.
+
+\begin{theorem}[Critical delay and Hopf crossing]
+\label{thm:critical_delay}
+For the scalar linearized delay equation \eqref{eq:linear_delay}, the interior equilibrium is locally asymptotically stable for
+\[
+0\le b\Delta < \frac{\pi}{2}.
+\]
+At
+\begin{equation}
+    \Delta_c=\frac{\pi}{2Cx^*(1-x^*)p'(x^*)},
+\label{eq:deltac}
+\end{equation}
+the characteristic equation has a simple conjugate pair of purely imaginary roots $\lambda=\pm ib$ that cross the imaginary axis with positive speed as $\Delta$ increases through $\Delta_c$. Thus $\Delta_c$ is the first local stability boundary and the reduced nonlinear delay differential equation (DDE) satisfies the local Hopf crossing conditions. The criticality of this bifurcation is established in Proposition~\ref{prop:supercritical}.
+\end{theorem}
+
+\begin{proof}
+Seek solutions of the characteristic equation by substituting $u(t)=e^{\lambda t}$ into \eqref{eq:linear_delay}, obtaining
+\[
+\lambda=\beta e^{-\lambda\Delta}.
+\]
+At the first stability crossing, let $\lambda=i\omega$ with $\omega>0$. Since $\beta=-b$,
+\[
+i\omega=-b e^{-i\omega\Delta}=-b(\cos(\omega\Delta)-i\sin(\omega\Delta)).
+\]
+Equating real and imaginary parts gives
+\[
+0=-b\cos(\omega\Delta),\qquad \omega=b\sin(\omega\Delta).
+\]
+The first condition requires $\cos(\omega\Delta)=0$, so $\omega\Delta=\pi/2+n\pi$ for non-negative integer $n$. The first crossing corresponds to $n=0$, giving $\omega\Delta=\pi/2$ and hence $\omega=b$ from the second equation. Substituting $b=Cx^*(1-x^*)p'(x^*)$ yields \eqref{eq:deltac}.
+
+It remains to verify the transversality condition and the absence of other imaginary-axis roots. Write the characteristic equation as $\lambda+be^{-\lambda\Delta}=0$. Differentiating with respect to $\Delta$:
+\[
+\frac{d\lambda}{d\Delta}=\frac{b\lambda e^{-\lambda\Delta}}{1-b\Delta e^{-\lambda\Delta}}.
+\]
+At $\lambda=ib$, $\Delta=\Delta_c=\pi/(2b)$, we have $e^{-ib\Delta_c}=e^{-i\pi/2}=-i$, so $be^{-\lambda\Delta}=-ib$. Substituting:
+\[
+\frac{d\lambda}{d\Delta}\bigg|_{\Delta=\Delta_c}=\frac{b^2}{1+i\pi/2},
+\]
+and therefore $\operatorname{Re}(d\lambda/d\Delta)=b^2/(1+\pi^2/4)>0$. The eigenvalue crosses the imaginary axis with positive speed. To verify no other purely imaginary roots exist at $\Delta_c$, note that if $\lambda=i\omega$ is a root, then taking moduli in $i\omega=-be^{-i\omega\Delta_c}$ gives $|\omega|=b$, so the only purely imaginary roots are $\lambda=\pm ib$. By the Hopf bifurcation theorem for delay differential equations \citep{kuang1993delay}, a periodic orbit bifurcates from the equilibrium at $\Delta=\Delta_c$. The direction and stability of this bifurcation are determined by the first Lyapunov coefficient, computed via center manifold reduction in Proposition~\ref{prop:supercritical}.
+\end{proof}
+
+\begin{proposition}[Supercritical Hopf bifurcation]
+\label{prop:supercritical}
+For the sigmoid response $p(x)=\sigma(k(x-x_c))$ and any admissible parameters such that the interior equilibrium $x^*\in(0,1)$ exists (equivalently, $p(0)<a/C<p(1)$; for steep sigmoids this reduces to $0<a<C$), the Hopf bifurcation at $\Delta=\Delta_c$ is supercritical: the first Lyapunov coefficient satisfies $\operatorname{Re}(c_1(0))<0$, the bifurcating periodic orbits are orbitally stable, and their amplitude grows continuously from zero as $\Delta$ increases through $\Delta_c$.
+\end{proposition}
+
+The proof proceeds by center manifold reduction following the Hassard--Kazarinoff--Wan formalism \citep{hassard1981theory} applied to the infinite-dimensional DDE phase space \citep{hale1993introduction}. The key steps are: (i)~expansion of the nonlinearity to cubic order around $x^*$; (ii)~projection onto the center eigenspace via the Hale--Verduyn Lunel bilinear form; (iii)~computation of the center manifold corrections $W_{20}$, $W_{11}$; and (iv)~extraction of the first Lyapunov coefficient $c_1(0)$ from the resulting normal form. For the sigmoid response, the closed-form expression for $\operatorname{Re}(c_1(0))$ factors into a positive prefactor times $(\rho-1)\mathcal{B}$, where $\rho = p(x^*) = a/C \in (0,1)$ is the equilibrium repression probability and $\mathcal{B}$ is shown to be strictly positive for all $\rho\in(0,1)$ and $k>0$ by a positive-definiteness argument on a quadratic form. Since $\rho < 1$, it follows that $\operatorname{Re}(c_1(0))<0$ universally. The full derivation, including symbolic verification and numerical validation over $54{,}000$ parameter combinations, is given in Appendix~\ref{app:hopf_proof}.
+
+For the sigmoid response function, the derivative at equilibrium takes the form
+\begin{equation}
+    p'(x^*) = k\,\frac{a}{C}\left(1-\frac{a}{C}\right),
+\end{equation}
+Substituting into \eqref{eq:deltac} yields the explicit critical delay
+\begin{equation}
+    \Delta_c =
+    \frac{\pi}
+    {2k\,a\,x^*(1-x^*)\left(1-\frac{a}{C}\right)}.
+\label{eq:deltac_sigmoid}
+\end{equation}
+This expression reveals that the critical delay decreases with increasing sharpness $k$, with increasing autonomy advantage $a$ (provided $a<C$), and is minimized near mixed-population states where $x^*(1-x^*)$ is large.
+
+\subsection{Summary and testable hypotheses}
+
+Prior work established the existence of Hopf bifurcations in delayed replicator equations with symmetric, linear payoffs \citep{wesson2016hopf, wesson2016hopfRPS}. \citet{benkhalifa2018distributed} showed that the shape of the delay distribution (Dirac, uniform, Gamma) affects the Hopf threshold, and \citet{wettergren2023replicator} demonstrated that asymmetric delays on costs versus benefits produce alternating stability--instability windows absent in the single-delay case. In feedback-evolving games, \citet{yan2021cooperator} found that delayed environmental feedback from cooperation, combined with punishment of defectors, generates oscillations through the same Hopf mechanism, a parallel finding where the delay acts on agent contributions rather than institutional observation. More recently, \citet{gao2025bifurcation} combined logistic population growth with strategy-dependent delays, producing richer bifurcation structure than the constant-population case. In multi-agent reinforcement learning, \citet{chen2020delay} formalized delay-aware Markov games and showed that delay from one agent propagates to others' learning, while \citet{derman2021acting} proved that deterministic non-stationary Markov policies suffice under execution delay without state augmentation, which provides theoretical backing for why Q-learning handles delayed environments. The present analysis extends this body of work in two directions. First, we replace the symmetric payoff structure with an asymmetric institutional response: a nonlinear sigmoid function $p(x)$ that models threshold-based repression (Section~2.2). This changes both the equilibrium condition ($p(x^*)=a/C$ rather than a symmetric Nash condition) and the form of the critical delay (Equation~\ref{eq:deltac_sigmoid}), which now depends on the sharpness parameter $k$ controlling institutional decisiveness. Second, we prove that the Hopf bifurcation is supercritical \emph{universally} across the sigmoid parameter class (Proposition~\ref{prop:supercritical}), not just for isolated parameter values. Prior results left the bifurcation direction as a numerical observation; we provide a closed-form proof via center manifold reduction, validated symbolically and numerically over $54{,}000$ parameter combinations (Appendix~\ref{app:hopf_proof}). Together, these results yield a complete analytical characterization: for any sigmoid response, the delayed system transitions from a stable equilibrium to bounded limit cycles at a critical delay $\Delta_c$ that decreases with sharpness $k$ and is maximally fragile near the institutional threshold.
+
+The analytical results generate three testable hypotheses for the networked agent-based simulation (Section~3). We state them here to motivate the experimental design in Section~4.
+
+\begin{enumerate}
+\item \textbf{Delay destabilizes.} Increasing the institutional delay $\Delta$ should move the system from stable equilibrium to oscillatory dynamics and, beyond the local bifurcation, potentially to runaway-crackdown regimes. This follows directly from Theorem~\ref{thm:critical_delay}: the stability margin shrinks as $\Delta$ grows.
+\item \textbf{Sharpness amplifies.} Increasing the response sharpness $k$ should reduce the stability margin by lowering $\Delta_c$ (Equation~\ref{eq:deltac_sigmoid}), so that at fixed delay the system crosses from stable to unstable as $k$ increases.
+\item \textbf{Mixed populations are most fragile.} Fragility should be greatest where the product $x^*(1-x^*)p'(x^*)$ is large. For a sigmoid response, this maximum occurs near the response midpoint $x_c$ when the population is neither overwhelmingly conformist nor overwhelmingly autonomous.
+\end{enumerate}
+
+These hypotheses concern local stability. Theorem~\ref{thm:critical_delay} proves that the equilibrium loses stability via a Hopf bifurcation, and Proposition~\ref{prop:supercritical} establishes that this bifurcation is supercritical: the resulting periodic orbit is orbitally stable with amplitude growing continuously from zero. The theory does not, by itself, characterize global dynamics such as large-amplitude runaway or crackdown. The transition from continuous ODE to discrete networked simulation introduces three additional complexity layers: (i)~finite populations with stochastic action selection, (ii)~heterogeneous network structure, and (iii)~adaptive agents that learn from experience. The experiments in Section~4 test whether the delay-destabilization mechanism survives these extensions, and which agent architecture is most vulnerable.

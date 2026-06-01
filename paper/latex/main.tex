@@ -1,0 +1,67 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, calc, decorations.pathreplacing}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\newcommand{\Rfrac}{x_R}
+\newcommand{\Mfrac}{x_M}
+\newcommand{\Lfrac}{x_L}
+\newcommand{\DeltaCrit}{\Delta_c}
+
+\newcommand{\placeholderfig}[2]{%
+\begin{center}
+\fbox{\begin{minipage}{0.88\linewidth}\centering\vspace{0.35in}\textbf{Placeholder figure: #1}\\[0.25em]#2\vspace{0.35in}\end{minipage}}
+\end{center}}
+
+\title{Delayed Repression and Emergent Instability in Adaptive Multi-Agent Systems}
+\author{Igor Itkin\\
+\small Independent Researcher, Tel Aviv, Israel\\
+\small \texttt{ig.itkin@gmail.com}\\
+\small ORCID: \href{https://orcid.org/0009-0004-9513-8463}{0009-0004-9513-8463}}
+\date{May 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Regulatory institutions (from content moderation platforms to financial supervisors) observe, deliberate, and intervene only after a characteristic delay. We ask whether this processing lag alone can destabilize a multi-agent system that would otherwise remain stable, without exogenous shocks, coordination among agents, or malicious actors. We study this question in two stages. First, we analyze a delayed replicator equation in which autonomous agents receive a benefit from radical behavior but face punishment based on a lagged institutional alarm signal. We derive a closed-form critical delay threshold beyond which the unique interior equilibrium loses stability through a Hopf bifurcation, and prove via center manifold reduction that the bifurcation is supercritical (producing bounded oscillations, not explosive growth) for the entire sigmoid response-function family. Second, we embed $N=240$ agents on a network and equip them with reinforcement learning (tabular Q-learning), comparing three decision architectures in a factorial design: non-reactive agents (fixed policy), reactive agents (threshold heuristic without memory), and Q-learning agents (adaptive with cumulative value estimates). The results reveal a hierarchy opposite to the naive expectation that learning amplifies instability. Reactive agents provide the cleanest case: perfectly stable without delay (100\% stable at $\Delta=0$), they collapse catastrophically once delay is introduced (96\% runaway by delay$\,{\geq}\,8$ steps)---delay alone, applied to an otherwise stable population, drives the transition. Non-reactive (fixed-policy) agents are immune (0\% runaway at all delays), and Q-learning agents are only partially resilient (66\% runaway at delay$\,{=}\,20$) but, unlike reactive agents, carry an intrinsic oscillatory tendency even without delay. The destabilizing ingredient is reactivity to delayed signals: agents that immediately exploit low-alarm windows trigger oscillatory feedback loops. Learning buffers this through implicit punishment memory encoded in Q-values. Throughout, ``runaway'' denotes bounded large-amplitude oscillation crossing a radical-fraction threshold, consistent with the supercritical bifurcation, not unbounded growth.
+\end{abstract}
+
+\input{sections/01_introduction.tex}
+\input{sections/02_model_theory.tex}
+\input{sections/03_network_model.tex}
+\input{sections/04_experiments.tex}
+\input{sections/06_discussion.tex}
+\input{sections/07_conclusion.tex}
+
+\section*{Acknowledgments}
+The author thanks Ilya Makarov for valuable feedback on the manuscript.
+
+\bibliographystyle{plainnat}
+\bibliography{main}
+
+\appendix
+\input{sections/appendix_hopf_proof.tex}
+\input{sections/appendix_experiment_details.tex}
+
+\end{document}

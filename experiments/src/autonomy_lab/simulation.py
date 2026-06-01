@@ -158,9 +158,35 @@ def build_graph(cfg, seed):
         bridges = set(sorted(bc, key=lambda node: bc[node], reverse=True)[:n_bridges])
     for i in range(n):
         if i not in G: G.add_node(i)
+    # Content placement: assign dangerous (D) content with optional bridge bias.
+    # "uniform" (default) draws each node's type independently. "bridge_biased"
+    # concentrates D on bridge nodes; "nonbridge_biased" concentrates D off bridges.
+    # The overall D fraction (~0.20) is held fixed across placements.
+    placement = cfg.get('content_placement', 'uniform')
+    forced_ctype = {}
+    if cfg.get('enable_content', False) and placement in ('bridge_biased', 'nonbridge_biased'):
+        n_dangerous = int(round(0.20 * n))
+        bridge_list = list(bridges)
+        nonbridge_list = [i for i in range(n) if i not in bridges]
+        random.shuffle(bridge_list); random.shuffle(nonbridge_list)
+        primary = bridge_list + nonbridge_list if placement == 'bridge_biased' else nonbridge_list + bridge_list
+        d_nodes = set(primary[:n_dangerous])
+        remaining = [i for i in range(n) if i not in d_nodes]
+        random.shuffle(remaining)
+        # Split the rest between H (0.35/0.80) and P (0.45/0.80) proportionally
+        n_h = int(round(0.35/0.80 * len(remaining)))
+        for idx, node in enumerate(remaining):
+            forced_ctype[node] = 'H' if idx < n_h else 'P'
+        for node in d_nodes:
+            forced_ctype[node] = 'D'
     for i in G.nodes():
         is_bridge = i in bridges
-        ctype = random.choices(CONTENT, weights=[0.35,0.45,0.20])[0] if cfg.get('enable_content', False) else 'N'
+        if not cfg.get('enable_content', False):
+            ctype = 'N'
+        elif i in forced_ctype:
+            ctype = forced_ctype[i]
+        else:
+            ctype = random.choices(CONTENT, weights=[0.35,0.45,0.20])[0]
         G.nodes[i].update({
             'action': random.choices(ACTIONS, weights=[0.80,0.17,0.03])[0],
             'charisma': random.uniform(0.85,1.25) + (0.2 if is_bridge else 0.0),
@@ -214,8 +240,22 @@ CONFUSIONS = {
     'fn_heavy': {'H':{'H':0.85,'P':0.13,'D':0.02}, 'P':{'H':0.20,'P':0.70,'D':0.10}, 'D':{'H':0.25,'P':0.50,'D':0.25}},
 }
 
-def sample_predicted_labels(G, noise_mode='oracle'):
-    mat = CONFUSIONS.get(noise_mode, CONFUSIONS['default'])
+def _interpolate_confusion(alpha, base='fp_heavy'):
+    """Interpolate between a base confusion matrix and oracle. alpha=1 → oracle, alpha=0 → base."""
+    base_mat = CONFUSIONS[base]
+    oracle = CONFUSIONS['oracle']
+    result = {}
+    for c in base_mat:
+        result[c] = {}
+        for label in base_mat[c]:
+            result[c][label] = alpha * oracle[c][label] + (1 - alpha) * base_mat[c][label]
+    return result
+
+def sample_predicted_labels(G, noise_mode='oracle', classifier_accuracy=None):
+    if classifier_accuracy is not None:
+        mat = _interpolate_confusion(classifier_accuracy)
+    else:
+        mat = CONFUSIONS.get(noise_mode, CONFUSIONS['default'])
     for i in G.nodes():
         c = G.nodes[i]['content_type']
         probs = mat[c]
@@ -296,7 +336,7 @@ def repression_prob(G, i, delayed_alarm, cfg, force, bridge_mult_override=None):
 def step(G, memory, cfg, rng, reg_agent=None, mult_bandit=None, content_transitions=None):
     delayed_alarm = memory[0]
     if cfg.get('enable_noise', False):
-        sample_predicted_labels(G, cfg.get('noise_mode','default'))
+        sample_predicted_labels(G, cfg.get('noise_mode','default'), classifier_accuracy=cfg.get('classifier_accuracy'))
     else:
         for i in G.nodes(): G.nodes[i]['predicted_type'] = G.nodes[i]['content_type']
     reg_obs = None
@@ -320,7 +360,7 @@ def step(G, memory, cfg, rng, reg_agent=None, mult_bandit=None, content_transiti
     if content_transitions is not None:
         apply_content_transitions(G, actions, content_transitions)
         if cfg.get('enable_noise', False):
-            sample_predicted_labels(G, cfg.get('noise_mode','default'))
+            sample_predicted_labels(G, cfg.get('noise_mode','default'), classifier_accuracy=cfg.get('classifier_accuracy'))
         else:
             for i in G.nodes(): G.nodes[i]['predicted_type'] = G.nodes[i]['content_type']
     active_mult = None
@@ -330,7 +370,8 @@ def step(G, memory, cfg, rng, reg_agent=None, mult_bandit=None, content_transiti
     for i in G.nodes():
         p = repression_prob(G, i, delayed_alarm, cfg, force, bridge_mult_override=active_mult)
         punished = random.random() < p
-        rewards[i] = benefit(G.nodes[i]['action'], G.nodes[i]['charisma'], G.nodes[i]['content_type']) + float(cfg.get('influence_weight',0.22))*local_influence(G,i)*state_value(G.nodes[i]['action']) - (punishment_cost(G.nodes[i]['action'], G.nodes[i]['cost_scale']) if punished else 0.0)
+        effective_cost_scale = G.nodes[i]['cost_scale'] * float(cfg.get('cost_scale_override', 1.0))
+        rewards[i] = benefit(G.nodes[i]['action'], G.nodes[i]['charisma'], G.nodes[i]['content_type']) + float(cfg.get('influence_weight',0.22))*local_influence(G,i)*state_value(G.nodes[i]['action']) - (punishment_cost(G.nodes[i]['action'], effective_cost_scale) if punished else 0.0)
         punished_flags[i] = punished; rep_probs[i] = p
     for i in G.nodes(): G.nodes[i]['punished_last_step'] = punished_flags[i]
     current_alarm = global_alarm(G)

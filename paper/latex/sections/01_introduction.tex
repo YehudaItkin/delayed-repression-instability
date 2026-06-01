@@ -1,0 +1,59 @@
+\section{Introduction}
+
+Regulatory bodies observe aggregate statistics, deliberate, and intervene only after a characteristic delay. This paper asks what happens in an \emph{adaptive multi-agent system} (a population of agents that modify their behavior in response to observed rewards and punishments) when institutional feedback arrives with such a delay. The answer, at least in our model, is that delay alone can destabilize an otherwise stable system: no exogenous shock is needed. The replicator equation \citep{taylor1978evolutionary, hofbauer1998evolutionary} provides the analytical framework, and network structure shapes the conditions under which autonomy persists \citep{nowak2006five, szabo2007evolutionary, lieberman2005evolutionary}, but the core mechanism we study is temporal: a lag between what agents do and when the institution responds.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+    node distance=1.2cm and 1.8cm,
+    box/.style={draw, rounded corners, minimum width=2.2cm, minimum height=0.7cm, align=center, font=\small},
+    arr/.style={-{Stealth[length=6pt]}, thick},
+    label/.style={font=\footnotesize\itshape, text=gray!70!black},
+]
+
+\begin{scope}[local bounding box=left]
+\node[font=\small\bfseries] (titleL) {(a) No delay ($\Delta=0$)};
+\node[box, below=0.5cm of titleL] (agentsL) {Agents\\choose actions};
+\node[box, right=1.4cm of agentsL] (alarmL) {Alarm\\$A(t)$};
+\node[box, below=0.8cm of alarmL] (instL) {Institution\\sets $p(t)$};
+\node[box, below=0.8cm of agentsL] (punishL) {Punishment\\$\xi_i(t)$};
+
+\draw[arr] (agentsL) -- node[above, label] {radical fraction} (alarmL);
+\draw[arr] (alarmL) -- node[right, label] {current state} (instL);
+\draw[arr] (instL) -- node[below, label] {repression} (punishL);
+\draw[arr] (punishL) -- node[left, label] {cost $\to$ retreat} (agentsL);
+
+\node[below=0.3cm of punishL, font=\small, text=green!50!black] (resultL) {$\longrightarrow$ Stable equilibrium $x^*$};
+\end{scope}
+
+\begin{scope}[xshift=8.5cm, local bounding box=right]
+\node[font=\small\bfseries] (titleR) {(b) With delay ($\Delta>\Delta_c$)};
+\node[box, below=0.5cm of titleR] (agentsR) {Agents\\choose actions};
+\node[box, right=1.4cm of agentsR] (alarmR) {Alarm\\$A(t{-}\Delta)$};
+\node[box, below=0.8cm of alarmR] (instR) {Institution\\sets $p(t)$};
+\node[box, below=0.8cm of agentsR] (punishR) {Punishment\\$\xi_i(t)$};
+
+\draw[arr] (agentsR) -- node[above, label] {radical fraction} (alarmR);
+\draw[arr, red!70!black, dashed] (alarmR) -- node[right, label, text=red!70!black] {\textbf{stale} state} (instR);
+\draw[arr] (instR) -- node[below, label] {repression} (punishR);
+\draw[arr] (punishR) -- node[left, label] {cost $\to$ retreat} (agentsR);
+
+\node[below=0.3cm of punishR, font=\small, text=red!60!black] (resultR) {$\longrightarrow$ Oscillations / runaway};
+\end{scope}
+
+\draw[gray, dashed] ($(left.north east)+(0.6,0.3)$) -- ($(left.south east)+(0.6,-0.3)$);
+
+\end{tikzpicture}
+\caption{The delay-destabilization mechanism. (a)~Without delay, the institution observes the current state and adjusts repression in real time; negative feedback drives the system to a stable equilibrium $x^*$. (b)~When institutional processing introduces delay $\Delta$, the alarm signal is stale: agents have already changed behavior by the time repression arrives. Above a critical threshold $\Delta_c$, this stale feedback generates oscillations or runaway. The paper derives $\Delta_c$ analytically (Section~2) and tests which agent architectures are most vulnerable (Section~4).}
+\label{fig:mechanism}
+\end{figure}
+
+Several lines of work address time delays in replicator dynamics. \citet{kuang1993delay} established the mathematical framework for delay differential equations in population dynamics. In evolutionary game theory, \citet{alboszta2004stability} showed that time delay can destabilize evolutionarily stable strategies in discrete replicator dynamics, while \citet{wesson2016hopf} proved the existence of Hopf bifurcations in two-strategy delayed replicator equations and characterized the critical delay at which limit cycles emerge. The effect is not universal: \citet{iijima2012delayed} found that in a class of discrete delayed dynamics the stability of the mixed equilibrium is preserved independent of the delay, showing that whether delay destabilizes is model-dependent. \citet{mittal2020delayed} analyzed the delayed replicator-mutator equation, showing how delay generates limit cycles even in cooperative regimes. The upshot is that delay can qualitatively change stable equilibria into oscillatory or unstable ones, but the outcome depends on the specific response structure. We build on this line of work because it provides the analytical foundation (the Hopf bifurcation framework for delayed replicator equations) that we extend to nonlinear institutional response functions and validate in an agent-based simulation.
+
+Despite this analytical foundation, the interaction between delayed institutional feedback and adaptive learning agents on structured networks has not been studied. Most analytical results assume well-mixed populations with fixed strategy revision protocols \citep{miekisz2008evolutionary}. Real multi-agent systems, however, involve agents that learn from experience, interact on heterogeneous graphs, and face punishment signals that propagate through institutional channels with variable latency. The literature on evolutionary dynamics on graphs \citep{ohtsuki2006simple, santos2005scalefree, perc2013evolutionary, perc2017statistical, mcavoy2022social} and on multi-agent reinforcement learning \citep{sutton2018reinforcement, zhang2021marl_survey, gronauer2022marl} have proceeded largely separately. Recent work on reward delays in single-agent and multi-agent reinforcement learning (RL) \citep{bouteiller2020delays, zhang2023marl} addresses convergence properties but not the evolutionary stability questions that arise when delayed feedback drives population-level regime transitions. We draw on both traditions because the gap lies at their intersection: delayed institutional feedback (from evolutionary game theory) has not been combined with adaptive learning agents (from multi-agent RL) on structured networks. How does the delay-instability mechanism manifest when agents learn from experience rather than following fixed revision protocols?
+
+Our central finding is counterintuitive: adaptive learning does not amplify delay-induced instability---it partially buffers it. The destabilizing ingredient is not learning but reactivity to delayed signals. Agents that react immediately to low-alarm windows exploit them and trigger oscillatory feedback loops; agents that learn from cumulative punishment history resist this trap. We reach this conclusion through a two-stage approach. First, we analyze the delayed replicator equation with a nonlinear sigmoid response function, specializing the Hopf bifurcation framework of \citet{wesson2016hopf} to derive a closed-form critical delay $\Delta_c$ and prove via center manifold reduction that the bifurcation is supercritical for the entire admissible sigmoid parameter class (Proposition~\ref{prop:supercritical}). This guarantees bounded limit cycles rather than explosive instability above the critical threshold. We validate the analytical result through numerical ordinary differential equation (ODE) integration and a discrete mean-field bridge connecting the continuous theory to the agent-based simulation. Second, we construct a networked multi-agent simulation with $N=240$ reinforcement learning agents on a modular graph and run a factorial experiment crossing delay with agent decision architecture. Three architectures are compared: non-reactive agents (fixed policy), reactive agents (threshold heuristic without memory), and Q-learning agents (tabular reinforcement learning with cumulative value estimates). The results reveal a clear hierarchy. Reactive agents are the cleanest demonstration of the central claim: with no delay they are fully stable (100\% stable at $\Delta=0$), and delay alone drives them to catastrophic runaway (96\% by delay$\,{\geq}\,8$). Non-reactive (fixed-policy) agents are immune (0\% runaway at all tested values), confirming that the feedback loop is necessary. Q-learning agents achieve partial resilience (66\% at delay${}\,{=}\,20$) by encoding historical punishment into their value functions, though they carry an intrinsic oscillatory tendency at $\Delta=0$ (only ${\approx}42\%$ stable) that the memoryless reactive baseline lacks.
+
+The reduced ODE is a caricature, not a forecast. It identifies a local instability mechanism; the simulations then test whether that mechanism survives contact with a realistic population of adaptive agents on a heterogeneous network. The key empirical question is how different agent architectures interact with delay, and the two-factor design reveals that reactivity, not learning per se, is the destabilizing ingredient.
+
+Section~2 develops the analytical theory (delayed replicator equation, critical delay, Hopf bifurcation proof). Section~3 describes the networked simulation model, including agent learning dynamics and network topologies. Section~4 presents the experiments and results. Section~5 discusses implications and limitations. The companion paper extends the setting to noisy selective control on modular networks. Code and data: \url{https://github.com/YehudaItkin/delayed-repression-instability}.

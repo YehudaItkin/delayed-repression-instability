@@ -1,0 +1,167 @@
+\section{Proof of Supercritical Hopf Bifurcation}
+\label{app:hopf_proof}
+
+This appendix establishes Proposition~\ref{prop:supercritical}: the Hopf bifurcation at $\Delta=\Delta_c$ is supercritical for all admissible sigmoid parameters. The proof follows the Hassard--Kazarinoff--Wan center manifold reduction \citep{hassard1981theory} applied to the DDE phase space \citep{hale1993introduction}. We proceed in five steps, summarized in Table~\ref{tab:proof_roadmap}.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{clll}
+\toprule
+Step & Goal & Key result & Equation \\
+\midrule
+1 & Linearize and set up phase space & Hayes equation, $\beta=-b$ & \eqref{eq:delayed_rep} \\
+2 & Eigenvectors and adjoint normalization & $\bar{D}=1/(1+i\pi/2)$ & \\
+3 & Nonlinear expansion to cubic order & $f_2$, $f_3$ & \eqref{eq:f2f3} \\
+4 & Center manifold and normal form & $c_1(0)$ & \eqref{eq:c1_appendix} \\
+5 & Sign analysis of $\operatorname{Re}(c_1)$ & $\operatorname{Re}(c_1)<0$ universally & \eqref{eq:Re_c1_closed_app} \\
+\bottomrule
+\end{tabular}
+\caption{Roadmap of the center-manifold reduction for Proposition~\ref{prop:supercritical}. \textbf{Conclusion:} the five steps culminate in $\operatorname{Re}(c_1)<0$ for all admissible sigmoid parameters, establishing that the Hopf bifurcation is supercritical (stable bounded limit cycles rather than explosive growth).}
+\label{tab:proof_roadmap}
+\end{table}
+
+\paragraph{Notation.} Throughout this appendix: $\rho = p(x^*) = a/C \in (0,1)$ is the equilibrium repression probability, $\alpha_0 = x^*(1-x^*)$, $\alpha_1 = 1-2x^*$, and $b = C\alpha_0 p'(x^*)$. All derivatives of $p$ are evaluated at $x^*$.
+
+\begin{proof}[Proof of Proposition~\ref{prop:supercritical}]
+
+\medskip
+\noindent\textbf{Step 1: Linearization and phase space.}
+Write $u(t)=x(t)-x^*$ and define $F(u,u_d)$ as the full nonlinearity, where $u_d=u(t-\Delta)$. Since $a-Cp(x^*)=0$ at equilibrium, the instantaneous linearization vanishes: $\partial_u F(0,0)=0$. The linearized equation is
+\[
+\dot{u}(t)=\beta\,u(t-\Delta), \qquad \beta=-b<0,
+\]
+the Hayes equation, whose phase space is $C=C([-\Delta_c,0],\mathbb{R})$.
+
+\medskip
+\noindent\textbf{Step 2: Eigenvectors and adjoint normalization.}
+At $\Delta=\Delta_c$, the characteristic equation $\lambda+be^{-\lambda\Delta}=0$ has roots $\lambda=\pm i\omega$ with $\omega=b$. Define:
+\begin{align*}
+\text{Eigenvector:} \quad & \varphi(\theta)=e^{i\omega\theta}, \quad \theta\in[-\Delta_c,0]. \\
+\text{Adjoint eigenvector:} \quad & \psi(s)=\bar{D}\,e^{i\omega s}, \quad s\in[0,\Delta_c].
+\end{align*}
+Normalizing via the Hale--Verduyn Lunel bilinear form $\langle\psi,\varphi\rangle=1$ yields
+\[
+\bar{D}=\frac{1}{1+i\pi/2}.
+\]
+
+\medskip
+\noindent\textbf{Step 3: Nonlinear expansion to cubic order.}
+The full nonlinearity is
+\[
+F(u,u_d) = (\alpha_0 + \alpha_1 u - u^2)\bigl[-Cp'u_d - \tfrac{1}{2}Cp''u_d^2 - \tfrac{1}{6}Cp'''u_d^3 + \cdots\bigr],
+\]
+where $\alpha_0 = x^*(1{-}x^*)$ and $\alpha_1 = 1{-}2x^*$. Collecting by order:
+\begin{equation}
+\label{eq:f2f3}
+\begin{aligned}
+f_2(u,u_d) &= -C\alpha_1 p'\; u\,u_d
+              &&-\; \tfrac{1}{2}\,C\alpha_0 p''\; u_d^2, \\[4pt]
+f_3(u,u_d) &= \phantom{-}C p'\; u^2 u_d
+              &&-\; \tfrac{1}{2}\,C\alpha_1 p''\; u\,u_d^2
+              \;-\; \tfrac{1}{6}\,C\alpha_0 p'''\; u_d^3.
+\end{aligned}
+\end{equation}
+For the sigmoid response, the derivatives at $x^*$ evaluate to:
+\begin{align}
+p'  &= k\,\rho(1-\rho), \nonumber\\
+p'' &= k^2\,\rho(1-\rho)(1-2\rho), \label{eq:sigmoid_derivs}\\
+p'''&= k^3\,\rho(1-\rho)\bigl(1-6\rho(1-\rho)\bigr). \nonumber
+\end{align}
+
+\medskip
+\noindent\textbf{Step 4: Center manifold reduction and normal form.}
+On the center manifold, $u\approx z+\bar{z}$ and $u_d\approx i(\bar{z}-z)$ (since $e^{-i\omega\Delta_c}=-i$). Projecting $f_2$ onto the center eigenspace gives the second-order normal form coefficients $g_{20}$, $g_{11}$, $g_{02}$.
+
+The center manifold corrections $W_{20}(\theta)$ and $W_{11}(\theta)$ satisfy the boundary value problems
+\begin{align*}
+(2i\omega - \mathcal{A})\,W_{20} &= H_{20}, \\
+-\mathcal{A}\,W_{11} &= H_{11},
+\end{align*}
+where $\mathcal{A}$ is the infinitesimal generator of the linearized semigroup. The right-hand sides $H_{20}$, $H_{11}$ are determined by projecting the quadratic nonlinearity onto the stable complement. The resulting values at $\theta=0$ and $\theta=-\Delta_c$ are verified symbolically (supplementary code) to satisfy their boundary conditions identically for all parameter values.
+
+These corrections yield the third-order coefficient $g_{21}$ and the first Lyapunov coefficient:
+\begin{equation}
+c_1(0) \;=\; \frac{i}{2\omega}
+  \Bigl(\,g_{20}\,g_{11} - 2\,|g_{11}|^2 - \tfrac{1}{3}\,|g_{02}|^2\,\Bigr)
+  \;+\; \frac{g_{21}}{2}.
+\label{eq:c1_appendix}
+\end{equation}
+
+\medskip
+\noindent\textbf{Step 5: Sign analysis of $\operatorname{Re}(c_1)$.}
+Carrying out the full computation and rationalizing all complex denominators (supplementary code provides the symbolic derivation), we obtain:
+\begin{equation}
+\operatorname{Re}(c_1(0))=\underbrace{\frac{Ck\rho}{5\alpha_0(4+\pi^2)}}_{>0}\cdot\;\underbrace{\mathcal{N}(k,\rho,\alpha_0,\alpha_1)}_{\text{sign?}},
+\label{eq:Re_c1_closed_app}
+\end{equation}
+where the numerator factors as $\mathcal{N}=(\rho-1)\cdot\mathcal{B}$, with $\rho-1<0$ for all $\rho\in(0,1)$. It remains to show $\mathcal{B}>0$.
+\end{proof}
+
+\begin{lemma}[Positivity of $\mathcal{B}$]
+\label{lem:B_positive}
+For all $\rho\in(0,1)$, $k>0$, and $x^*\in(0,1)$, define
+\begin{align*}
+\mathcal{B} \;=\;&
+  \underbrace{2\,Q(\rho)\;(\alpha_0 k)^2}_{\text{term } A}
+  \;-\; \underbrace{(7\pi{-}8)(2\rho{-}1)\;(\alpha_0 k)\,\alpha_1}_{\text{cross-term } B}  \\[4pt]
+  &+\; \underbrace{2(3\pi{-}2)\;\alpha_1^2}_{\text{term } C}
+  \;+\; \underbrace{10\pi\,\alpha_0}_{\text{remainder}},
+\end{align*}
+where $Q(\rho)=-(7\pi-8)\rho(1-\rho)+(3\pi-2)$. Then $\mathcal{B}>0$.
+\end{lemma}
+
+\begin{proof}
+Since $\rho(1-\rho)\le 1/4$, we have $Q(\rho)\ge (3\pi-2)-(7\pi-8)/4 = 5\pi/4 > 0$.
+
+The first three terms form a quadratic form in the variables $v_1=\alpha_0 k$ and $v_2=\alpha_1$:
+\[
+\mathcal{B}_0(v_1,v_2) = 2Q\,v_1^2 - (7\pi{-}8)(2\rho{-}1)\,v_1 v_2 + 2(3\pi{-}2)\,v_2^2.
+\]
+This is positive definite whenever the discriminant condition $4AC > B^2$ holds, i.e.,
+\[
+16\,Q\,(3\pi-2) > (7\pi-8)^2(2\rho-1)^2.
+\]
+Substituting $\mu=\rho(1-\rho)$ so that $(2\rho-1)^2=1-4\mu$, the condition becomes
+\[
+[-20\pi(7\pi-8)]\,\mu + 95\pi^2-80\pi > 0.
+\]
+Since the coefficient of $\mu$ is negative, the worst case is $\mu=1/4$ (i.e., $\rho=1/2$), giving $20\pi(3\pi-2)>0$. Hence $\mathcal{B}_0$ is positive definite for all $\rho\in(0,1)$.
+
+Adding the strictly positive remainder $10\pi\alpha_0>0$ gives $\mathcal{B} = \mathcal{B}_0 + 10\pi\alpha_0 > 0$.
+\end{proof}
+
+\noindent\textbf{Conclusion of the proof.}
+Since $\rho-1<0$ and $\mathcal{B}>0$ (Lemma~\ref{lem:B_positive}), we have $\mathcal{N}=(\rho-1)\mathcal{B}<0$. The prefactor in \eqref{eq:Re_c1_closed_app} is strictly positive. Therefore $\operatorname{Re}(c_1(0))<0$ for all admissible parameters.
+
+\medskip
+
+\paragraph{Bifurcation direction and orbital stability.} The standard Hassard--Kazarinoff--Wan quantities are
+\[
+\mu_2 = -\frac{\operatorname{Re}(c_1(0))}{\operatorname{Re}(d\lambda/d\Delta)\big|_{\Delta_c}} > 0, \qquad
+\beta_2 = 2\operatorname{Re}(c_1(0)) < 0.
+\]
+Since $\mu_2>0$, the bifurcation is supercritical (periodic orbits exist for $\Delta>\Delta_c$). Since $\beta_2<0$, the bifurcating periodic orbits are orbitally stable.
+
+\paragraph{Numerical validation.}
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrl}
+\toprule
+Quantity & Value & Interpretation \\
+\midrule
+$\operatorname{Re}(c_1(0))$ & $-40.85$ & $<0$: supercritical \\
+$\mu_2$ & $15.95$ & $>0$: orbits exist above $\Delta_c$ \\
+$\beta_2$ & $-81.70$ & $<0$: orbits are stable \\
+\bottomrule
+\end{tabular}
+\caption{Bifurcation quantities at representative parameters $(a,C,k,x_c)=(2,5,10,0.5)$. \textbf{Conclusion:} $\operatorname{Re}(c_1)<0$, $\mu_2>0$, and $\beta_2<0$ jointly confirm a supercritical Hopf bifurcation, with stable limit cycles emerging for $\Delta>\Delta_c$.}
+\label{tab:hopf_numerics}
+\end{table}
+
+Three independent checks validate the algebraic reduction:
+\begin{enumerate}
+\item \textbf{Grid evaluation:} on a $30\times60\times30$ grid (30 values of $\rho$ uniform in $(0,1)$, 60 values of $k$ log-uniform in $[0.1,10^4]$, 30 values of $x_c$ uniform in $[0.02,0.98]$), $\operatorname{Re}(c_1)$ is strictly negative at every \emph{admissible} point---those with an interior equilibrium $x^*\in(0,1)$, which is the hypothesis of the proposition. Grid points with no interior equilibrium fall outside the proposition's scope and are excluded.
+\item \textbf{DDE integration:} Direct numerical integration confirms continuous amplitude growth from zero above $\Delta_c$ for all tested parameter sets.
+\item \textbf{BVP residuals:} Boundary condition residuals for $W_{20}$ and $W_{11}$ remain below $10^{-12}$ across $10^3$ random parameter draws.
+\end{enumerate}
+Supplementary scripts (Python/SymPy and Wolfram Language) reproduce all symbolic derivations and numerical checks.

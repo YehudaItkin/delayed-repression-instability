@@ -1,0 +1,87 @@
+\section{Networked Simulation Model}
+
+The mean-field ODE (Section~2) proves that delay can destabilize an equilibrium, but it assumes a well-mixed population of identical agents with a fixed strategy-revision rule. Real multi-agent systems violate all three assumptions: agents are heterogeneous, interact on structured networks, and adapt their behavior through learning. This section constructs a simulation that relaxes these assumptions. The goal is not to replicate the ODE dynamics quantitatively (the integer delay steps in the simulation do not map onto the continuous time units of the ODE) but to test whether the three hypotheses from Section~2.5 survive in a substantially richer system.
+
+\subsection{Agents and actions}
+
+Each agent $i\in\{1,\ldots,N\}$ chooses an action at each discrete time step $t$:
+\[
+    a_i(t)\in\{L,M,R\},
+\]
+corresponding to loyal, moderate, and radical behavior. These actions are mapped to a numerical activity level $f(L)=0$, $f(M)=1$, $f(R)=2$. Loyal agents conform fully to institutional expectations, moderate agents exercise limited autonomy, and radical agents pursue maximum autonomy at the risk of attracting punishment. Each agent is characterized by a learning rate $\alpha_i$, an exploration parameter $\epsilon_i$, and a detectability score $d_i$ that modulates how visible the agent's behavior is to the institutional observer.
+
+\subsection{Network topologies}
+
+Agents interact on a directed graph $G=(V,E)$ where edges represent influence relationships. The simulation supports three topology classes. Erd\H{o}s--R\'enyi random graphs provide a homogeneous-mixing baseline with approximately Poisson degree distribution \citep{szabo2007evolutionary}. Scale-free networks generated via preferential attachment produce heavy-tailed degree distributions in which hub nodes exert disproportionate influence \citep{santos2005scalefree}. Stochastic block model graphs create modular community structure with dense intra-community connectivity and sparse inter-community links \citep{holland1983stochastic, girvan2002community}.
+
+In the modular topology, bridge nodes are identified using betweenness centrality \citep{freeman1977betweenness}, which measures the fraction of shortest paths between all node pairs that pass through a given node. Nodes with high betweenness centrality serve as conduits for information and influence between communities. This definition ensures that bridge status reflects actual inter-community connectivity rather than merely high intra-community degree.
+
+\subsection{Aggregate alarm and delayed repression}
+
+The institutional observer computes an aggregate alarm signal by averaging weighted activity levels across the population:
+\begin{equation}
+    A(t)=\frac{1}{N}\sum_{i=1}^{N} d_i\, f(a_i(t)).
+\end{equation}
+The detectability weights $d_i$ allow heterogeneous visibility: agents in exposed positions or with high-profile behavior contribute more to the institutional alarm than those operating in obscurity.
+
+The repression probability for agent $i$ at time $t$ depends on the delayed alarm:
+\begin{equation}
+    p_i(t)=u_t\,\sigma\bigl(k(A(t-\Delta)-A_c)\bigr)\,d_i,
+\end{equation}
+where $\sigma(\cdot)$ is the logistic sigmoid from Section~2, $\Delta$ is the institutional delay measured in discrete time steps, $k$ is the response sharpness, $A_c$ is the alarm threshold, and $u_t \in [0, 2.5]$ is the regulator force (the institutional control intensity). The regulator force $u_t$ may be fixed at a constant value, adjusted by a heuristic rule, or selected by a learning regulator agent. The product $\sigma(\cdot)\,d_i$ ensures that more detectable agents face higher punishment probability when the system is under repression.
+
+\subsection{Local influence and rewards}
+
+Each agent observes its local neighborhood through an influence signal:
+\begin{equation}
+    I_i(t)=\sum_{j\in\mathcal{N}^{-}(i)} w_{ji}\, f(a_j(t)),
+\end{equation}
+where $\mathcal{N}^{-}(i)$ denotes the set of agents with directed edges into $i$ and $w_{ji}$ are influence weights. The agent's immediate reward combines a benefit from its action, a social influence component, and a punishment cost:
+\begin{equation}
+    r_i(t)=B(a_i(t),\chi_i)+\lambda\, I_i(t)\,f(a_i(t))-\xi_i(t)\,C(a_i(t),\kappa_i),
+\end{equation}
+where $\xi_i(t)\sim\mathrm{Bernoulli}(p_i(t))$ is a stochastic punishment indicator (the agent either receives the full cost or nothing at each step), $\chi_i$ is a charisma parameter scaling the benefit of radical behavior, $\lambda$ is the influence coupling strength, and $\kappa_i$ scales the punishment cost. The benefit function is $B(a,\chi) = \chi \cdot f(a)$ (linear in activity level, so radical actions yield the highest benefit), and the cost function is $C(a,\kappa) = \kappa \cdot f(a)$ (punishment is proportional to activity level). This incentive gradient toward radicalism is counterbalanced by the repression mechanism.
+
+\subsection{Learning dynamics}
+
+In learning variants, each agent employs tabular Q-learning \citep{sutton2018reinforcement}, a standard reinforcement learning algorithm in which the agent maintains a table of estimated long-run values $Q(s,a)$ for each state--action pair and updates them toward observed rewards. The agent uses a compact state representation. The observation state for agent $i$ at time $t$ is a tuple comprising a discretized local influence bucket, a discretized delayed alarm bucket, a binary recent-punishment indicator, and a binary bridge-membership flag. This yields a state space of manageable size ($3 \times 3 \times 2 \times 2 = 36$ states) that agents can explore within the simulation horizon. The Q-update rule is standard:
+\[
+Q_i(s,a) \leftarrow Q_i(s,a) + \alpha_i\bigl[r_i(t) + \gamma \max_{a'} Q_i(s',a') - Q_i(s,a)\bigr],
+\]
+where $s$ is the current observation state, $s'$ is the next observation state (computed from the next time step's delayed alarm and local influence), and $\gamma$ is the discount factor. Action selection follows an $\epsilon$-greedy policy with exploration rate $\epsilon_i = 0.08$ (a standard choice in tabular RL ensuring sufficient exploration without excessive noise; \citealp{sutton2018reinforcement}, Chapter~2). The learning rate is $\alpha_i = 0.10$ and the discount factor $\gamma = 0.95$, both standard defaults for tabular Q-learning in environments with moderate horizon length \citep{sutton2018reinforcement}. We verified robustness with a $3\times3$ sweep over $\alpha \in \{0.05, 0.1, 0.2\}$ and $\gamma \in \{0.9, 0.95, 0.99\}$: across all nine combinations the Q-learning runaway rate is ${\approx}15\%$ at $\Delta=0$, $35\%$ at $\Delta=8$, and $65$--$75\%$ at $\Delta=20$, so both the monotonic delay--runaway relationship and the architecture hierarchy are preserved (results under \texttt{experiments/results/paper1\_v2/alpha\_gamma\_robust}). The learning model is deliberately minimal: it provides agents with the capacity to detect and exploit temporal patterns in repression without pretending to model human cognition.
+
+In fixed-policy variants, agents do not learn. Instead, they sample actions from a stationary probability distribution over $\{L,M,R\}$ that does not depend on the environment state. This provides a baseline against which to measure the destabilizing potential of adaptive behavior under delayed feedback.
+
+\subsection{Simulation loop}
+
+Algorithm~\ref{alg:sim} summarizes the complete simulation loop, showing how the components defined above connect into a training procedure. Each agent's objective is to maximize cumulative discounted reward $\sum_{t=0}^{T-1} \gamma^t r_i(t)$; there is no explicit loss function to minimize, because the Q-learning update rule (above) approximates the optimal policy through temporal-difference bootstrapping rather than gradient descent.
+
+\begin{figure}[ht]
+\centering
+\begin{minipage}{0.92\linewidth}
+\begin{algorithmic}[1]
+\small
+\State \textbf{Input:} graph $G$, delay $\Delta$, sharpness $k$, horizon $T$, seeds
+\State Initialize Q-tables $Q_i(s,a) \leftarrow 0$ for all agents $i$, states $s$, actions $a$
+\State Initialize alarm history buffer $H \leftarrow [0, \ldots, 0]$ of length $\Delta + 1$
+\For{$t = 0, 1, \ldots, T-1$}
+    \State Compute delayed alarm: $A_{\mathrm{delayed}} \leftarrow H[t - \Delta]$ \hfill\emph{(stale observation)}
+    \For{each agent $i$}
+        \State Observe state $s_i \leftarrow (\text{influence bucket}, \text{alarm bucket}, \text{punished?}, \text{bridge?})$
+        \State Select action $a_i \leftarrow \epsilon\text{-greedy}(Q_i, s_i, \epsilon_i)$
+    \EndFor
+    \State Compute current alarm: $A(t) \leftarrow \frac{1}{N}\sum_i d_i \cdot f(a_i)$; append to $H$
+    \State Compute repression: $p_i(t) \leftarrow u_t \cdot \sigma(k(A_{\mathrm{delayed}} - A_c)) \cdot d_i$
+    \State Sample punishment: $\xi_i(t) \sim \mathrm{Bernoulli}(p_i(t))$
+    \State Compute rewards: $r_i(t) \leftarrow B(a_i, \chi_i) + \lambda\, I_i(t) \cdot f(a_i) - \xi_i(t) \cdot C(a_i, \kappa_i)$
+    \For{each agent $i$ (learning variants only)}
+        \State Observe next state $s'_i$ from step $t{+}1$ observations
+        \State Update: $Q_i(s_i, a_i) \leftarrow Q_i(s_i, a_i) + \alpha_i[r_i(t) + \gamma \max_{a'} Q_i(s'_i, a') - Q_i(s_i, a_i)]$
+    \EndFor
+\EndFor
+\State \textbf{Output:} time-series history $\{A(t), \Rfrac(t), \text{regime label}\}$
+\end{algorithmic}
+\end{minipage}
+\captionof{algorithm}{Simulation loop for one run. The key feature is that repression at step $t$ is computed from the alarm at step $t{-}\Delta$ (line~5), creating the delayed feedback loop that drives instability.}
+\label{alg:sim}
+\end{figure}

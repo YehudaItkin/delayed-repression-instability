@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+# LaTeX build artifacts (PDFs under figures/ and paper/ are committed)
+*.aux
+*.log
+*.out
+*.blg
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.toc
+*.bcf
+*.run.xml
+# OS
+.DS_Store
+# Raw per-run outputs (frozen summary.csv is committed)
+**/run_*_seed_*/

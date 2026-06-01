@@ -1,0 +1,52 @@
+\section{Experiment Details}
+\label{app:experiments}
+
+This appendix provides implementation details for all experiments reported in the main text. Full experiment configurations are stored as JSON manifests in \texttt{experiments/configs/} and each run produces a deterministic output bundle.
+
+\subsection{Output structure}
+
+Each experimental run produces three artifacts: a \texttt{history.csv} file containing the full time series of behavioral fractions, alarm, repression probability, and punishment counts at each time step; a \texttt{summary.json} file containing aggregate statistics computed over the final 50\% of the simulation horizon and a regime label; and a \texttt{config\_resolved.json} file recording the exact parameter values used. Each sweep directory additionally produces a \texttt{summary.csv} aggregating all per-run summaries. The regime label is assigned by the adaptive classifier (spectral analysis with runaway threshold $R_{\max}>0.40$); the old fixed-threshold classifier is also recorded as \texttt{regime\_fixed} for comparison.
+
+\subsection{Common parameters}
+
+Unless otherwise noted, all networked simulations use $N=240$ agents on a stochastic block model graph with 6 communities, intra-community edge probability $p_{\mathrm{in}}=0.08$, inter-community edge probability $p_{\mathrm{out}}=0.004$, and bridge fraction 12\% (defined by betweenness centrality). Agent Q-learning parameters: $\alpha=0.10$, $\epsilon=0.08$, $\gamma=0.95$. Influence coupling strength $\lambda=0.22$; alarm threshold $A_c=0.72$. Content types are disabled for all Paper~1 experiments (\texttt{enable\_content=false}; agents receive neutral payoffs with no content-type bonuses). All experiments use 50 seeds (1--50).
+
+\subsection{Experiment catalog}
+
+Table~\ref{tab:experiment_summary} summarizes all six experiments at a glance; the paragraphs that follow give the full configuration for each.
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}clp{2.2cm}p{2.3cm}cp{3.2cm}@{}}
+\toprule
+Exp. & System & Varied factor & Fixed parameters & Runs & Headline finding \\
+\midrule
+1 & Delayed replicator ODE & $\Delta/\Delta_c \in [0,4]$ & $a{=}2$, $C{=}7$, $k{=}10$, $x_c{=}0.72$ & 80 & Hopf bifurcation at $\Delta_c$ exactly; supercritical \\
+2 & Discrete mean-field & step size $\eta$, $\Delta$ & same as Exp.~1 & grid & discretization shrinks the stability margin monotonically \\
+3 & Network, Q-learning & $\Delta \in \{0\text{--}30\}$ & $k{=}20$, $N{=}240$ & 450 & runaway $10\% \to 72\%$ ($+62$ pp) \\
+4 & Network, Q-learning & $k \in \{3\text{--}40\}$ & $\Delta{=}15$, $N{=}240$ & 400 & runaway $16\% \to 64\%$; knee at $k{=}7\text{--}10$ \\
+5 & Network, crossed & $\Delta \times$ architecture & $k{=}10$, $N{=}240$ & 750 & reactive $96\% >$ Q-learning $66\% >$ fixed $0\%$ \\
+6 & Network, governance & regulator type & $\Delta{=}6$, $k{=}10$ & 150 & RL regulator converts runaway to oscillation (exploratory) \\
+\bottomrule
+\end{tabular}
+\caption{Summary of all Paper~1 experiments. Experiments~1--2 validate the analytical theory (the ODE and its discretization); Experiments~3--6 test it in the networked simulation with $N{=}240$ agents and 50 seeds per condition. ``Runs'' counts independent simulations: Experiment~1 counts ODE integrations and Experiment~2 is a deterministic $\Delta\times\eta$ grid, while Experiments~3--6 are seeded ($9{\times}50$, $8{\times}50$, $3{\times}5{\times}50$, $3{\times}50$). \textbf{Conclusion:} the delay-instability mechanism survives every added layer of realism, and the central crossing (Experiment~5) isolates reactivity---not learning---as the destabilizing ingredient. All headline numbers reproduce from the frozen \texttt{summary.csv} files under \texttt{experiments/results/paper1\_v2/} (for Experiment~5, group by the \texttt{learning\_mode} column).}
+\label{tab:experiment_summary}
+\end{table}
+
+\paragraph{Experiment~1: ODE validation.} Numerical integration of the delayed replicator equation~\eqref{eq:delayed_rep} using Euler stepping for the DDE (global truncation error $O(\mathrm{d}t)$; at $\mathrm{d}t=0.01$ the bifurcation point is resolved to within 1\% of $\Delta_c$, verified by halving the step size). Parameters: $a=2.0$, $C=7.0$, $k=10$, $x_c=0.72$. Delay swept from $0$ to $4\Delta_c$ in 80 values. Integration horizon: 120 time units with step size $\mathrm{d}t=0.01$. Output: bifurcation diagram, representative trajectories, and sharpness sweep.
+
+\paragraph{Experiment~2: Discrete mean-field.} Euler discretization of the delayed replicator equation with step size $\eta$ swept over $\{0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0\}$. Same base parameters as Experiment~1. Delay swept from 0 to 60 steps jointly with $\eta$ to produce a phase diagram. Each condition run for 2000 steps with deterministic initial conditions at $x^*+0.05$.
+
+\paragraph{Experiment~3: Delay sweep.} Full networked simulation with common parameters above plus $k=20$, 500 time steps. Delay swept over $\{0, 2, 4, 6, 8, 10, 14, 20, 30\}$ steps. Static regulator with force $u_t=1.0$. Seeds: 50 per delay level.
+
+\paragraph{Experiment~4: Sharpness sweep.} Same base configuration as Experiment~3 with delay fixed at 15 steps. Sharpness $k$ swept over $\{3, 5, 7, 10, 15, 20, 30, 40\}$. Seeds: 50 per sharpness level.
+
+\paragraph{Experiment~5: Crossed delay $\times$ architecture.} Two-factor design crossing delay $\in\{0, 4, 8, 14, 20\}$ with agent architecture $\in\{\text{fixed}, \text{reactive}, \text{Q-learning}\}$. Fixed agents use stationary action weights $[0.65, 0.27, 0.08]$ for $[L, M, R]$, chosen to approximate the empirical radical fraction at Q-learning convergence without delay and thus provide a matched non-adaptive baseline. Reactive agents use a threshold heuristic that responds to the delayed alarm, local influence signal, and punishment state but maintains no memory across steps. Q-learning agents use $\alpha=0.10$, $\epsilon=0.08$. Default sharpness $k=10$. Simulation horizon: 500 steps. Seeds: 50 per cell.
+
+\paragraph{Experiment~6: RL regulator.} Three conditions: (1) fixed agents with static regulator ($u_t=1.0$), (2) Q-learning agents with static regulator, (3) Q-learning agents with RL regulator. The RL regulator is a tabular Q-learning agent ($\alpha_{\mathrm{reg}}=0.05$, $\epsilon_{\mathrm{reg}}=0.10$, $\gamma_{\mathrm{reg}}=0.95$) observing a discretized state (4 alarm buckets $\times$ 3 radical-fraction buckets) and selecting $u_t$ from $\{0.0, 0.5, 1.0, 1.5, 2.0, 2.5\}$. Regulator reward: $r_{\mathrm{reg}} = -x_R - 0.1 u_t$. Default delay ($\Delta=6$ steps) and sharpness ($k=10$). Simulation horizon: 500 steps. Seeds: 50 per condition.
+
+\subsection{Reproducibility}
+
+All results are generated from frozen random seeds (seeds 1--50 for each condition). The simulation code is deterministic given a seed, configuration, and Python/NumPy version. Results reported in the main text are stored under \texttt{experiments/results/paper1\_v2/}. The regime classifier thresholds are documented in \texttt{experiments/src/autonomy\_lab/metrics.py} and were fixed prior to running the final experiments.

@@ -1,0 +1,247 @@
+\begin{thebibliography}{35}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Alboszta and Miekisz(2004)]{alboszta2004stability}
+Jan Alboszta and Jacek Miekisz.
+\newblock Stability of evolutionarily stable strategies in discrete replicator
+  dynamics with time delay.
+\newblock \emph{Journal of Theoretical Biology}, 231\penalty0 (2):\penalty0
+  175--179, 2004.
+\newblock \doi{10.1016/j.jtbi.2004.06.012}.
+
+\bibitem[Ben-Khalifa et~al.(2018)Ben-Khalifa, El-Azouzi, and
+  Hayel]{benkhalifa2018distributed}
+Nesrine Ben-Khalifa, Rachid El-Azouzi, and Yezekael Hayel.
+\newblock Discrete and continuous distributed delays in replicator dynamics.
+\newblock \emph{Dynamic Games and Applications}, 8\penalty0 (4):\penalty0
+  713--732, 2018.
+\newblock \doi{10.1007/s13235-017-0225-7}.
+
+\bibitem[Bouteiller et~al.(2021)Bouteiller, Ramstedt, Beltrame, Pal, and
+  Binas]{bouteiller2020delays}
+Yann Bouteiller, Simon Ramstedt, Giovanni Beltrame, Christopher Pal, and
+  Jonathan Binas.
+\newblock Reinforcement learning with random delays.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2021.
+
+\bibitem[Chen et~al.(2020)Chen, Xu, Liu, Li, and Zhao]{chen2020delay}
+Baiming Chen, Mengdi Xu, Zuxin Liu, Liang Li, and Ding Zhao.
+\newblock Delay-aware multi-agent reinforcement learning for cooperative and
+  competitive environments.
+\newblock \emph{arXiv preprint arXiv:2005.05441}, 2020.
+
+\bibitem[Derman et~al.(2021)Derman, Dalal, and Mannor]{derman2021acting}
+Esther Derman, Gal Dalal, and Shie Mannor.
+\newblock Acting in delayed environments with non-stationary markov policies.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2021.
+
+\bibitem[Freeman(1977)]{freeman1977betweenness}
+Linton~C. Freeman.
+\newblock A set of measures of centrality based on betweenness.
+\newblock \emph{Sociometry}, 40\penalty0 (1):\penalty0 35--41, 1977.
+\newblock \doi{10.2307/3033543}.
+
+\bibitem[Girvan and Newman(2002)]{girvan2002community}
+Michelle Girvan and Mark E.~J. Newman.
+\newblock Community structure in social and biological networks.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 99\penalty0
+  (12):\penalty0 7821--7826, 2002.
+\newblock \doi{10.1073/pnas.122653799}.
+
+\bibitem[Gronauer and Diepold(2022)]{gronauer2022marl}
+Sven Gronauer and Klaus Diepold.
+\newblock Multi-agent deep reinforcement learning: A survey.
+\newblock \emph{Artificial Intelligence Review}, 55:\penalty0 895--943, 2022.
+\newblock \doi{10.1007/s10462-021-09996-w}.
+
+\bibitem[Hale and Verduyn~Lunel(1993)]{hale1993introduction}
+Jack~K Hale and Sjoerd~M Verduyn~Lunel.
+\newblock \emph{Introduction to Functional Differential Equations}, volume~99
+  of \emph{Applied Mathematical Sciences}.
+\newblock Springer, 1993.
+
+\bibitem[Hassard et~al.(1981)Hassard, Kazarinoff, and Wan]{hassard1981theory}
+Brian~D Hassard, Nicholas~D Kazarinoff, and Yieh-Hei Wan.
+\newblock \emph{Theory and Applications of Hopf Bifurcation}, volume~41 of
+  \emph{London Mathematical Society Lecture Note Series}.
+\newblock Cambridge University Press, 1981.
+
+\bibitem[Hofbauer and Sigmund(1998)]{hofbauer1998evolutionary}
+Josef Hofbauer and Karl Sigmund.
+\newblock \emph{Evolutionary Games and Population Dynamics}.
+\newblock Cambridge University Press, 1998.
+
+\bibitem[Holland et~al.(1983)Holland, Laskey, and
+  Leinhardt]{holland1983stochastic}
+Paul~W. Holland, Kathryn~Blackmond Laskey, and Samuel Leinhardt.
+\newblock Stochastic blockmodels: First steps.
+\newblock \emph{Social Networks}, 5\penalty0 (2):\penalty0 109--137, 1983.
+\newblock \doi{10.1016/0378-8733(83)90021-7}.
+
+\bibitem[Iijima(2012)]{iijima2012delayed}
+Ryota Iijima.
+\newblock On delayed discrete evolutionary dynamics.
+\newblock \emph{Journal of Theoretical Biology}, 300:\penalty0 1--6, 2012.
+\newblock \doi{10.1016/j.jtbi.2012.01.001}.
+
+\bibitem[Kuang(1993)]{kuang1993delay}
+Yang Kuang.
+\newblock \emph{Delay Differential Equations with Applications in Population
+  Dynamics}.
+\newblock Academic Press, 1993.
+
+\bibitem[Lieberman et~al.(2005)Lieberman, Hauert, and
+  Nowak]{lieberman2005evolutionary}
+Erez Lieberman, Christoph Hauert, and Martin~A. Nowak.
+\newblock Evolutionary dynamics on graphs.
+\newblock \emph{Nature}, 433\penalty0 (7023):\penalty0 312--316, 2005.
+\newblock \doi{10.1038/nature03204}.
+
+\bibitem[McAvoy and Allen(2021)]{mcavoy2022social}
+Alex McAvoy and Benjamin Allen.
+\newblock Fixation probabilities in evolutionary dynamics under weak selection.
+\newblock \emph{Journal of Mathematical Biology}, 82:\penalty0 14, 2021.
+\newblock \doi{10.1007/s00285-021-01568-4}.
+
+\bibitem[Miekisz(2008)]{miekisz2008evolutionary}
+Jacek Miekisz.
+\newblock Evolutionary game theory and population dynamics.
+\newblock In \emph{Multiscale Problems in the Life Sciences}, volume 1940 of
+  \emph{Lecture Notes in Mathematics}, pages 269--316. Springer, 2008.
+\newblock \doi{10.1007/978-3-540-78362-6_5}.
+
+\bibitem[Mittal et~al.(2020)Mittal, Mukhopadhyay, and
+  Chakraborty]{mittal2020delayed}
+Sourabh Mittal, Archan Mukhopadhyay, and Sagar Chakraborty.
+\newblock Evolutionary dynamics of the delayed replicator--mutator equation:
+  Limit cycle and cooperation.
+\newblock \emph{Physical Review E}, 101\penalty0 (4):\penalty0 042410, 2020.
+\newblock \doi{10.1103/PhysRevE.101.042410}.
+
+\bibitem[Mohamadichamgavi and Bodnar(2025)]{gao2025bifurcation}
+Javad Mohamadichamgavi and Marek Bodnar.
+\newblock Bifurcation analysis of replicator dynamics with logistic growth and
+  strategy-dependent time delays in snowdrift game.
+\newblock \emph{Dynamic Games and Applications}, 2025.
+\newblock \doi{10.1007/s13235-025-00671-1}.
+
+\bibitem[Nowak(2006)]{nowak2006five}
+Martin~A. Nowak.
+\newblock Five rules for the evolution of cooperation.
+\newblock \emph{Science}, 314\penalty0 (5805):\penalty0 1560--1563, 2006.
+\newblock \doi{10.1126/science.1133755}.
+
+\bibitem[Ohtsuki et~al.(2006)Ohtsuki, Hauert, Lieberman, and
+  Nowak]{ohtsuki2006simple}
+Hisashi Ohtsuki, Christoph Hauert, Erez Lieberman, and Martin~A. Nowak.
+\newblock A simple rule for the evolution of cooperation on graphs and social
+  networks.
+\newblock \emph{Nature}, 441\penalty0 (7092):\penalty0 502--505, 2006.
+\newblock \doi{10.1038/nature04605}.
+
+\bibitem[Perc et~al.(2013)Perc, G{\'o}mez-Garde{\~n}es, Szolnoki, Flor{\'i}a,
+  and Moreno]{perc2013evolutionary}
+Matja{\v{z}} Perc, Jes{\'u}s G{\'o}mez-Garde{\~n}es, Attila Szolnoki, Luis~M.
+  Flor{\'i}a, and Yamir Moreno.
+\newblock Evolutionary dynamics of group interactions on structured
+  populations: A review.
+\newblock \emph{Journal of the Royal Society Interface}, 10\penalty0
+  (80):\penalty0 20120997, 2013.
+\newblock \doi{10.1098/rsif.2012.0997}.
+
+\bibitem[Perc et~al.(2017)Perc, Jordan, Rand, Wang, Boccaletti, and
+  Szolnoki]{perc2017statistical}
+Matja{\v{z}} Perc, Jillian~J. Jordan, David~G. Rand, Zhen Wang, Stefano
+  Boccaletti, and Attila Szolnoki.
+\newblock Statistical physics of human cooperation.
+\newblock \emph{Physics Reports}, 687:\penalty0 1--51, 2017.
+\newblock \doi{10.1016/j.physrep.2017.05.004}.
+
+\bibitem[Santos and Pacheco(2005)]{santos2005scalefree}
+Francisco~C. Santos and Jorge~M. Pacheco.
+\newblock Scale-free networks provide a unifying framework for the emergence of
+  cooperation.
+\newblock \emph{Physical Review Letters}, 95\penalty0 (9):\penalty0 098104,
+  2005.
+\newblock \doi{10.1103/PhysRevLett.95.098104}.
+
+\bibitem[Scheffer(2009)]{scheffer2009critical}
+Marten Scheffer.
+\newblock \emph{Critical Transitions in Nature and Society}.
+\newblock Princeton University Press, 2009.
+
+\bibitem[Sutton and Barto(2018)]{sutton2018reinforcement}
+Richard~S. Sutton and Andrew~G. Barto.
+\newblock \emph{Reinforcement Learning: An Introduction}.
+\newblock MIT Press, 2018.
+
+\bibitem[Szab{\'o} and F{\'a}th(2007)]{szabo2007evolutionary}
+Gy{\"o}rgy Szab{\'o} and G{\'a}bor F{\'a}th.
+\newblock Evolutionary games on graphs.
+\newblock \emph{Physics Reports}, 446\penalty0 (4--6):\penalty0 97--216, 2007.
+\newblock \doi{10.1016/j.physrep.2007.04.004}.
+
+\bibitem[Taylor and Jonker(1978)]{taylor1978evolutionary}
+Peter~D. Taylor and Leo~B. Jonker.
+\newblock Evolutionary stable strategies and game dynamics.
+\newblock \emph{Mathematical Biosciences}, 40\penalty0 (1--2):\penalty0
+  145--156, 1978.
+\newblock \doi{10.1016/0025-5564(78)90077-9}.
+
+\bibitem[Traulsen et~al.(2006)Traulsen, Nowak, and
+  Pacheco]{traulsen2006stochastic}
+Arne Traulsen, Martin~A Nowak, and Jorge~M Pacheco.
+\newblock Stochastic dynamics of invasion and fixation.
+\newblock \emph{Physical Review E}, 74\penalty0 (1):\penalty0 011909, 2006.
+\newblock \doi{10.1103/PhysRevE.74.011909}.
+
+\bibitem[Wesson and Rand(2016)]{wesson2016hopfRPS}
+Elizabeth Wesson and Richard Rand.
+\newblock Hopf bifurcations in delayed rock--paper--scissors replicator
+  dynamics.
+\newblock \emph{Dynamic Games and Applications}, 6\penalty0 (1):\penalty0
+  139--156, 2016.
+\newblock \doi{10.1007/s13235-015-0138-2}.
+
+\bibitem[Wesson et~al.(2016)Wesson, Rand, and Rand]{wesson2016hopf}
+Elizabeth Wesson, Richard~H. Rand, and David~G. Rand.
+\newblock Hopf bifurcations in two-strategy delayed replicator dynamics.
+\newblock \emph{International Journal of Bifurcation and Chaos}, 26\penalty0
+  (1):\penalty0 1650006, 2016.
+\newblock \doi{10.1142/S0218127416500061}.
+
+\bibitem[Wettergren(2023)]{wettergren2023replicator}
+Thomas~A. Wettergren.
+\newblock Replicator dynamics of evolutionary games with different delays on
+  costs and benefits.
+\newblock \emph{Applied Mathematics and Computation}, 458:\penalty0 128228,
+  2023.
+\newblock \doi{10.1016/j.amc.2023.128228}.
+
+\bibitem[Yan et~al.(2021)Yan, Chen, Qiu, and Szolnoki]{yan2021cooperator}
+Fang Yan, Xiaojie Chen, Zhipeng Qiu, and Attila Szolnoki.
+\newblock Cooperator driven oscillation in a time-delayed feedback-evolving
+  game.
+\newblock \emph{New Journal of Physics}, 23:\penalty0 053017, 2021.
+\newblock \doi{10.1088/1367-2630/abf205}.
+
+\bibitem[Zhang et~al.(2021)Zhang, Yang, and Ba{\c{s}}ar]{zhang2021marl_survey}
+Kaiqing Zhang, Zhuoran Yang, and Tamer Ba{\c{s}}ar.
+\newblock Multi-agent reinforcement learning: A selective overview of theories
+  and algorithms.
+\newblock In \emph{Handbook of Reinforcement Learning and Control}, Studies in
+  Systems, Decision and Control, pages 321--384. Springer, 2021.
+
+\bibitem[Zhang et~al.(2023)Zhang, Zhang, Gu, and Li]{zhang2023marl}
+Yuyang Zhang, Runyu Zhang, Yuantao Gu, and Na~Li.
+\newblock Multi-agent reinforcement learning with reward delays.
+\newblock In \emph{Proceedings of the 5th Annual Learning for Dynamics and
+  Control Conference (L4DC)}, volume 211 of \emph{PMLR}, pages 692--704, 2023.
+
+\end{thebibliography}
